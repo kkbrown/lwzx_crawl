@@ -1,0 +1,14 @@
+{
+  "mysql": {
+    "host": "192.168.1.200",
+    "user": "cs",
+    "password": "CG@#Vzc=Xri3lW+8Z=q",
+    "database": "gz_cs",
+    "charset": "utf8mb4"
+  },
+  "dify": {
+    "api_key": "app-nJUrHUeJmMp9g040YoN3ujvC",
+    "base_url": "http://dify.datasw.cn/v1/workflows/run",
+    "user_id": "abc-123"
+  }
+}
