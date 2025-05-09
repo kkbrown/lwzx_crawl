@@ -114,4 +114,7 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
+    import urllib3
+
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     schedule_loop()

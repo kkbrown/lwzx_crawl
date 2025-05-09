@@ -65,7 +65,7 @@ def run_task():
             try:
                 # 判断type_cat 和 type_name
                 event_type_name_raw = item.get("blockreasonParent") + item.get("blockreasonChild")
-                print(f"event_type_name_raw: {event_type_name_raw}")
+                # print(f"event_type_name_raw: {event_type_name_raw}")
                 event_type_name = classify_event_type(event_type_name_raw)
                 
                 if item.get("blockreasonParent","") == "计划性施工":
@@ -75,8 +75,8 @@ def run_task():
                     
                 valid_dict = {
                     "province": "新疆",
-                    "road_code": item.get("roadcode"),
-                    "road_name": item.get("roadname"),
+                    "roadCode": item.get("roadcode"),
+                    "roadName": item.get("roadname"),
                     "publish_content": item.get("blockdesc"),
                     "publish_time": item.get("pubtime"),
                     "start_time": item.get("blockstarttime"),
@@ -96,10 +96,10 @@ def run_task():
         logging.info(f"成功采集新疆高速路况：{len(valid_data)} 条，异常：{len(error_log)} 条")
         save_to_file(valid_data, "xinjiang")
 
-        # config = load_config()
-        # conn = get_mysql_connection(config['mysql'])
-        # insert_traffic_data("新疆", valid_data, conn)
-        # conn.close()
+        config = load_config()
+        conn = get_mysql_connection(config['mysql'])
+        insert_traffic_data("新疆", valid_data, conn)
+        conn.close()
     except Exception as e:
         logging.error(f"任务执行失败: {e}")
 
@@ -113,5 +113,5 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
-    run_task()
+    schedule_loop()
+    # run_task()

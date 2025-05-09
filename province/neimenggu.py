@@ -96,8 +96,11 @@ def schedule_loop():
     while True:
         run_task()
         logging.info("等待30分钟...")
-        time.sleep(1800)
+        time.sleep(30 * 60)
 
 
 if __name__ == "__main__":
+    import urllib3
+
+    urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
     schedule_loop()
