@@ -24,7 +24,7 @@ def classify_event_type(event_type_raw: str) -> str:
 
     # 定义关键词映射表
     keyword_map = {
-        EventType.MAINTENANCE: ["施工", "养护", "维修", "养路"],
+        EventType.MAINTENANCE: ["施工", "养护", "维修", "养路", "绿化"],
         EventType.ACCIDENT: ["事故", "碰撞", "追尾", "刮擦", "车辆故障"],
         EventType.CONTROL: ["管制", "封闭", "限制", "交通管制","管控","车流量","封道"],
         EventType.WEATHER: ["气象", "天气", "雨", "雪", "雾", "冰", "风", "沙"]
