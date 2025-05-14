@@ -15,9 +15,9 @@ logging.basicConfig(
 )
 
 
-def fetch_xinjiang_event_data(limit=20, page=1):
+def fetch_liaoning_event_data(limit=20, page=1):
     """
-    获取新疆路障列表数据。
+    获取辽宁路障列表数据。
 
     :param limit: 每页返回的条目数，默认为20
     :param page: 页码，默认为1
@@ -48,7 +48,7 @@ def run_task():
         retry_count = 0
         while retry_count < 100:
             try:
-                data = fetch_xinjiang_event_data()
+                data = fetch_liaoning_event_data()
                 if isinstance(data, list) and len(data) > 0:
                     break
                 else:
@@ -74,8 +74,8 @@ def run_task():
             
                 valid_dict = {
                     "province": "辽宁",
-                    "road_code": road_code,
-                    "road_name": item.get("shortname"),
+                    "roadCode": road_code,
+                    "roadName": item.get("shortname"),
                     "publish_content": item.get("remark"),
                     "publish_time": item.get("occtime"),
                     "start_time": item.get("occtime"),
@@ -96,10 +96,11 @@ def run_task():
         save_to_file(valid_data, "liaoning")
         # save_to_file(error_log, "liaoning_error")
 
-        # config = load_config()
-        # conn = get_mysql_connection(config['mysql'])
-        # insert_traffic_data("新疆", valid_data, conn)
-        # conn.close()
+        config = load_config()
+        # print(config['mysql'])
+        conn = get_mysql_connection(config['mysql'])
+        insert_traffic_data("辽宁", valid_data, conn)
+        conn.close()
     except Exception as e:
         logging.error(f"任务执行失败: {e}")
 
@@ -115,4 +116,4 @@ def schedule_loop():
 if __name__ == "__main__":
     # schedule_loop()
     run_task()
-    # fetch_xinjiang_event_data()
+    # fetch_liaoning_event_data()
