@@ -77,7 +77,7 @@ def run_task():
                     "road_code": road_code,
                     "road_name": item.get("shortname"),
                     "publish_content": item.get("remark"),
-                    "publish_time": item.get("pubtime"),
+                    "publish_time": item.get("occtime"),
                     "start_time": item.get("occtime"),
                     "end_time": item.get("planovertime"),
                     "event_type_name": event_type_name,
