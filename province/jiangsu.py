@@ -112,22 +112,15 @@ def run_task():
         for item in data:
             try:
                 # 判断type_cat 和 type_name
-                event_type_name_raw = item.get("eventtypename")
-                # print(f"event_type_name_raw: {event_type_name_raw}")
-                if event_type_name_raw == "施工养护":
-                    event_type_name = EventType.MAINTENANCE
-                elif event_type_name_raw == "交通事故":
-                    event_type_name = EventType.ACCIDENT
-                elif event_type_name_raw == "特情信息":
-                    event_type_name = classify_event_type(item.get("reportout"))
+                event_type_name = classify_event_type(item.get("reportout"))
 
                 match = re.search(r'\b[SG]\d+', item.get("roadcodename"))   # 若需大小写不敏感，添加 flags=re.I
                 road_code = match.group(0) if match else ''
             
                 valid_dict = {
                     "province": "江苏",
-                    "road_code": road_code,
-                    "road_name": item.get("roadcodename")[len(road_code):],
+                    "roadCode": road_code,
+                    "roadName": item.get("roadcodename")[len(road_code):],
                     "publish_content": item.get("reportout"),
                     "publish_time": item.get("occtime"),
                     # "start_time": item.get("occtime"),
@@ -148,10 +141,10 @@ def run_task():
         save_to_file(valid_data, "jiangsu")
         # save_to_file(error_log, "jiangsu_error")
 
-        # config = load_config()
-        # conn = get_mysql_connection(config['mysql'])
-        # insert_traffic_data("江苏", valid_data, conn)
-        # conn.close()
+        config = load_config()
+        conn = get_mysql_connection(config['mysql'])
+        insert_traffic_data("江苏", valid_data, conn)
+        conn.close()
     except Exception as e:
         logging.error(f"任务执行失败: {e}")
 
@@ -165,7 +158,7 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
-    run_task()
+    schedule_loop()
+    # run_task()
     # fetch_jiangsu_event_data()
     # asyncio.run(crawl())

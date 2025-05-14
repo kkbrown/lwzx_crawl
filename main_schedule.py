@@ -11,6 +11,7 @@ from province.guangxi_temp import schedule_loop as guangxi_temp_schedule
 from province.neimenggu import schedule_loop as neimenggu_schedule
 from province.shanghai import schedule_loop as shanghai_schedule
 from province.xinjiang import schedule_loop as xinjiang_schedule
+from province.jiangsu import schedule_loop as jiangsu_schedule
 from road.section import schedule_loop as section_schedule
 from station.station import schedule_loop as station_schedule
 
@@ -28,6 +29,7 @@ def start_threads():
         ("NeimengguScheduleThread", neimenggu_schedule),
         ("ShanghaiScheduleThread", shanghai_schedule),
         ("XinjiangScheduleThread", xinjiang_schedule),
+        ("JiangsuScheduleThread", jiangsu_schedule),
     ]
 
     threads = []
