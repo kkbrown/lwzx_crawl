@@ -1,11 +1,11 @@
 import json
 import unittest
 import os
-from api.dify.dify_api import send_dify_request
+from api.dify.dify_api import road_conditions_extract, weather_extract
 
 
 class TestDifyClient(unittest.TestCase):
-    def test_send_dify_request(self):
+    def test_road_conditions_dify_request(self):
         # 构造一个简单的 info 字符串
         test_info = json.dumps({
             "eventId": "a67c64477930412ebfa3f2f8a6a0a64c",
@@ -31,7 +31,18 @@ class TestDifyClient(unittest.TestCase):
         base_dir = os.path.dirname(os.path.dirname(__file__))  # 回到项目根目录
         config_path = os.path.join(base_dir, "config", "config.test.json")
         try:
-            result = send_dify_request(test_info, config_path=config_path)
+            result = road_conditions_extract(test_info, config_path=config_path)
+            print("响应结果：", result)
+        except Exception as e:
+            self.fail(f"请求失败，错误: {e}")
+
+    def test_weather_dify_request(self):
+        test_info = "云南省思茅市宁洱哈尼族彝族自治县气象台发布雷电黄色预警信号"
+
+        base_dir = os.path.dirname(os.path.dirname(__file__))
+        config_path = os.path.join(base_dir, "config", "config.test.json")
+        try:
+            result = weather_extract(test_info, config_path=config_path)
             print("响应结果：", result)
         except Exception as e:
             self.fail(f"请求失败，错误: {e}")

@@ -1,6 +1,5 @@
 # dbconnection.py
 import datetime
-from lib2to3.fixes.fix_map import FixMap
 
 import pymysql
 import hashlib
@@ -141,3 +140,51 @@ def insert_station_data(data_list, conn):
     conn.commit()
     cursor.close()
     print(f"写入完成，失败 {error_count} 条")
+
+
+def insert_weather_data(weather_data, conn):
+    global title
+    print("正在写入 weather 表...")
+
+    sql = """
+        INSERT IGNORE INTO weather (id, province, city, area,title,warning_level,warning_type,warning_content,publish_time)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+    cursor = conn.cursor()
+
+    try:
+        id = md5_hash(weather_data['content'])
+        province = weather_data['province']
+        city = weather_data['city']
+        area = weather_data['area']
+        title = weather_data['title']
+        publish_time = weather_data['publish_time']
+        warning_level = weather_data['grade']
+        warning_type = weather_data['type']
+        warning_content = weather_data['content']
+
+        cursor.execute(sql, (
+            id, province, city, area, title, warning_level, warning_type, warning_content, publish_time))
+    except Exception as e:
+        logging.error(f"出错数据内容: {title}", "出错原因：{e}")
+
+    conn.commit()
+    cursor.close()
+    print(f"写入完成，标题 {title}")
+
+
+def check_weather_exists(content: str) -> bool:
+    """根据内容生成 ID 并检查是否存在于 weather 表中"""
+    id = md5_hash(content)
+    sql = "SELECT COUNT(*) FROM weather WHERE id = %s"
+
+    config = load_config()
+    conn = get_mysql_connection(config['mysql'])
+
+    cursor = conn.cursor()
+    cursor.execute(sql, (id,))
+    result = cursor.fetchone()
+    cursor.close()
+    conn.close()
+
+    return result[0] > 0

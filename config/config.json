@@ -6,9 +6,20 @@
     "database": "lwzx-data",
     "charset": "utf8mb4"
   },
-  "dify": {
-    "api_key": "app-nJUrHUeJmMp9g040YoN3ujvC",
-    "base_url": "http://dify.datasw.cn/v1/workflows/run",
-    "user_id": "abc-123"
-  }
+  "dify": [
+    {
+      "road_conditions": {
+        "api_key": "app-nJUrHUeJmMp9g040YoN3ujvC",
+        "base_url": "http://dify.datasw.cn/v1/workflows/run",
+        "user_id": "road_conditions-123"
+      }
+    },
+    {
+      "weather": {
+        "api_key": "app-JaYqtsk6qYmytL7CVvBvvOFn",
+        "base_url": "http://dify.datasw.cn/v1/workflows/run",
+        "user_id": "weather-123"
+      }
+    }
+  ]
 }
