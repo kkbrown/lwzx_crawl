@@ -6,7 +6,7 @@ import json
 import logging
 import time
 from api.dify.dify_api import weather_extract
-from dbconnection.db import load_config, insert_weather_data, get_mysql_connection, check_weather_exists
+from dbconnection.db import insert_weather_data, check_weather_exists, insert_region_info
 
 logging.basicConfig(
     level=logging.INFO,
@@ -14,7 +14,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler()]
 )
 
-base_api = "http://www.nmc.cn/rest/findAlarm?pageNo=1&pageSize=500&signaltype=&signallevel=&province=&_=1747273583571"
+base_api = "http://www.nmc.cn/rest/findAlarm?pageNo=1&pageSize=200&signaltype=&signallevel=&province=&_=1747273583571"
 base_url = "http://www.nmc.cn"
 
 headers = {
@@ -25,12 +25,34 @@ headers = {
 
 
 def fetch_alarm_list():
-    resp = requests.get(base_api, headers=headers, verify=False)
-    data = resp.json()
+    try:
+        resp = requests.get(base_api, headers=headers, verify=False, timeout=10)
+        resp.raise_for_status()  # 抛出 HTTP 错误
+        data = resp.json()
+    except Exception as e:
+        logging.error(f"[fetch_alarm_list] 请求或解析 JSON 失败：{e}")
+        return []  # 返回空列表，防止后续代码出错
+
     alarms = []
 
-    for item in data["data"]["page"]["list"]:
-        alarms.append(base_url + item["url"])
+    # 安全地提取数据
+    try:
+        alarm_list = data.get("data", {}).get("page", {}).get("list", [])
+        if not isinstance(alarm_list, list):
+            logging.warning("[fetch_alarm_list] 获取的 list 数据不是列表，返回为空")
+            return []
+
+        for item in alarm_list:
+            url = item.get("url")
+            if url:
+                alarms.append(base_url + url)
+            else:
+                logging.warning(f"[fetch_alarm_list] 某项缺少 URL 字段：{item}")
+
+    except Exception as e:
+        logging.error(f"[fetch_alarm_list] 提取报警列表失败：{e}")
+        return []
+
     return alarms
 
 
@@ -71,8 +93,10 @@ def parse_alarm_detail(url):
 
 
 def fetch_weather_save():
+    # 获取所有预警信息，并且把发布内容的url抓取出来
     urls = fetch_alarm_list()
     for url in urls:
+        # 通过url再次抓取，获取发布内容
         detail = parse_alarm_detail(url)
         if detail is None:
             continue
@@ -89,23 +113,29 @@ def fetch_weather_save():
                 "content": detail["content"],
                 "publish_time": detail["publish_time"]
             })
-            # 保存到数据库
-            config = load_config()
-            conn = get_mysql_connection(config['mysql'])
-            insert_weather_data(weather_data, conn)
-            conn.close()
+            province = weather_data["province"]
+            city = weather_data["city"]
+            area = weather_data["area"]
+            # 天气数据保存到数据库
+            insert_weather_data(weather_data)
+            # 行政地区数据保存到数据库
+            insert_region_info(province, city, area)
         except json.JSONDecodeError as e:
             print("解析失败：", json_str)
             print("错误：", e)
+            continue
 
 
 def schedule_loop():
-    logging.info("定时任务已启动：每30分钟执行一次")
+    logging.info("天气预警爬取定时任务已启动：每5分钟执行一次")
     while True:
+        start_time = time.time()
         fetch_weather_save()
-        logging.info("等待30分钟...")
-        time.sleep(30 * 60)
+        elapsed = time.time() - start_time
+        sleep_time = max(0, 5 * 60 - elapsed)
 
+        logging.info(f"等待 {int(sleep_time)} 秒...")
+        time.sleep(sleep_time)
 
 if __name__ == "__main__":
     schedule_loop()

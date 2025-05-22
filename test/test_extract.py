@@ -1,5 +1,6 @@
 import unittest
 from utils.info_extract import extract_first_highway
+from dbconnection.db import get_today_weather_ids
 
 class TestExtractFirstHighway(unittest.TestCase):
 
@@ -20,6 +21,10 @@ class TestExtractFirstHighway(unittest.TestCase):
         result = extract_first_highway(content)
         self.assertEqual(result["road_code"], "")
         self.assertEqual(result["road_name"], "")
+
+    def test_current_day_weather(self):
+        ids = get_today_weather_ids()
+        print(ids)
 
 if __name__ == '__main__':
     unittest.main()
