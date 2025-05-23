@@ -220,7 +220,6 @@ async def run_task():
             if "\n" in content:
                 content = content.replace("\n", " ")  # 确保每个事件描述在一行
             post_str += content + "\n"  # 按行区分，确保顺序对得上
-        print(f"post_str: {post_str}")
         # 校验环节，确保第idx个item对应第idx行
         post_lines = post_str.strip().split("\n")
         if len(post_lines) != len(valid_data):
@@ -233,7 +232,6 @@ async def run_task():
             # print(ans.keys())
             data = ans.get("data", [])
             class_name_list = data["outputs"]["class_name"]
-            print(f"Dify: class_name_list: {class_name_list}")
             for idx, item in enumerate(class_name_list):
                 if item is not None:
                     valid_data[idx]["event_type_name"] = item
