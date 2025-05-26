@@ -1,4 +1,4 @@
-CREATE TABLE `weather` (
+CREATE TABLE `weather_warning` (
   `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键ID',
   `province` varchar(50) NOT NULL COMMENT '省份名称',
   `city` varchar(50) DEFAULT NULL COMMENT '市名称',

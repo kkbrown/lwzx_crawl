@@ -142,13 +142,14 @@ def insert_station_data(data_list, conn):
     print(f"写入完成，失败 {error_count} 条")
 
 
-def insert_weather_data(weather_data, conn):
+def insert_weather_data(weather_data):
     global title
-    print("正在写入 weather 表...")
-
+    print("正在写入 weather_warning 表...")
+    config = load_config()
+    conn = get_mysql_connection(config['mysql'])
     sql = """
-        INSERT IGNORE INTO weather (id, province, city, area,title,warning_level,warning_type,warning_content,publish_time)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        INSERT IGNORE INTO weather_warning (id, province, city, area,title,warning_level,warning_type,warning_content,publish_time,publish_level)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
         """
     cursor = conn.cursor()
 
@@ -159,12 +160,13 @@ def insert_weather_data(weather_data, conn):
         area = weather_data['area']
         title = weather_data['title']
         publish_time = weather_data['publish_time']
+        publish_level = weather_data['publish_level']
         warning_level = weather_data['grade']
         warning_type = weather_data['type']
         warning_content = weather_data['content']
 
         cursor.execute(sql, (
-            id, province, city, area, title, warning_level, warning_type, warning_content, publish_time))
+            id, province, city, area, title, warning_level, warning_type, warning_content, publish_time, publish_level))
     except Exception as e:
         logging.error(f"出错数据内容: {title}", "出错原因：{e}")
 
@@ -174,9 +176,9 @@ def insert_weather_data(weather_data, conn):
 
 
 def check_weather_exists(content: str) -> bool:
-    """根据内容生成 ID 并检查是否存在于 weather 表中"""
+    """根据内容生成 ID 并检查是否存在于 weather_warning 表中"""
     id = md5_hash(content)
-    sql = "SELECT COUNT(*) FROM weather WHERE id = %s"
+    sql = "SELECT COUNT(*) FROM weather_warning WHERE id = %s"
 
     config = load_config()
     conn = get_mysql_connection(config['mysql'])
@@ -188,3 +190,50 @@ def check_weather_exists(content: str) -> bool:
     conn.close()
 
     return result[0] > 0
+
+
+def insert_region_info(province, city, area):
+    print("正在写入 region_info 表...")
+    config = load_config()
+    conn = get_mysql_connection(config['mysql'])
+    id = md5_hash(province + city + area)
+
+    sql = """
+    INSERT IGNORE INTO region_info (id, province, city, area)
+    VALUES (%s, %s, %s, %s)
+    """
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(sql, (
+            id, province, city, area))
+    except Exception as e:
+        logging.error("出错原因：{e}")
+
+    conn.commit()
+    cursor.close()
+
+
+def get_today_weather_ids():
+    print("正在查询今天的 weather_warning 数据 ID...")
+    config = load_config()
+    conn = get_mysql_connection(config['mysql'])
+    cursor = conn.cursor()
+    today = datetime.date.today().strftime('%Y-%m-%d')
+
+    sql = """
+        SELECT id FROM weather_warning
+        WHERE DATE(publish_time) = %s
+    """
+    print(f"查询日期：{today}")
+    try:
+        cursor.execute(sql, (today,))
+        result = cursor.fetchall()
+        ids = [row[0] for row in result]
+        print(f"查询完成，今天共有 {len(ids)} 条记录")
+        return ids
+    except Exception as e:
+        logging.error(f"查询今天 weather_warning 数据 ID 出错：{e}")
+        return []
+    finally:
+        cursor.close()
