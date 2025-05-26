@@ -207,10 +207,10 @@ async def run_task():
         logging.info(f"成功采集黑龙江高速路况：{len(valid_data)} 条，异常：{len(error_log)} 条")
         save_to_file(valid_data, "heilongjiang")
 
-        # config = load_config()
-        # conn = get_mysql_connection(config['mysql'])
-        # insert_traffic_data("", valid_data, conn)
-        # conn.close()
+        config = load_config()
+        conn = get_mysql_connection(config['mysql'])
+        insert_traffic_data("", valid_data, conn)
+        conn.close()
     except Exception as e:
         logging.error(f"任务执行失败: {e}")
 
@@ -224,6 +224,6 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
-    asyncio.run(run_task())
+    schedule_loop()
+    # asyncio.run(run_task())
 
