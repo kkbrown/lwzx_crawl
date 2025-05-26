@@ -228,11 +228,11 @@ def run_task():
                 if cat_name_list[idx] is not None:
                     valid_data[idx]["event_category"] = cat_name_list[idx]
                 else:
-                    raise ValueError(f"第 {idx} 行数据的 road_name 为空")
+                    raise ValueError(f"第 {idx} 行数据的 event_category 为空")
                 if end_time_list[idx] is not None:
                     valid_data[idx]["end_time"] = end_time_list[idx]
                 else:
-                    raise ValueError(f"第 {idx} 行数据的 road_code 为空")
+                    raise ValueError(f"第 {idx} 行数据的 end_time 为空")
         except Exception as e:
             logging.error(f"Dify工作流调用失败: {e}")
             raise RuntimeError("Dify工作流调用失败")
