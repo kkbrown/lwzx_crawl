@@ -269,6 +269,6 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
+    schedule_loop()
     # asyncio.run(fetch_beijing_event_data())
-    asyncio.run(run_task())
+    # asyncio.run(run_task())
