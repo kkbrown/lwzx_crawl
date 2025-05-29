@@ -130,12 +130,16 @@ def schedule_loop():
     logging.info("天气预警爬取定时任务已启动：每5分钟执行一次")
     while True:
         start_time = time.time()
-        fetch_weather_save()
+        try:
+            fetch_weather_save()
+        except Exception as e:
+            logging.error(f"[schedule_loop] 执行任务失败：{e}", exc_info=True)  # 打印堆栈信息
+
         elapsed = time.time() - start_time
         sleep_time = max(0, 5 * 60 - elapsed)
-
         logging.info(f"等待 {int(sleep_time)} 秒...")
         time.sleep(sleep_time)
+
 
 if __name__ == "__main__":
     schedule_loop()
