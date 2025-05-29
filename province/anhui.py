@@ -357,8 +357,8 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
-    asyncio.run(run_task())
+    schedule_loop()
+    # asyncio.run(run_task())
     # data = asyncio.run(fetch_links())
     # print(data)
     # d=asyncio.run(fetch_anhui_event_data())
