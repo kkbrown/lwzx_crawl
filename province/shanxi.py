@@ -287,13 +287,13 @@ async def run_task():
             logging.error(f"Dify工作流调用失败: {e}")
             raise RuntimeError("Dify工作流调用失败")
 
-        logging.info(f"成功采集shanxi高速路况：{len(valid_data)} 条，异常：{len(error_log)} 条")
+        logging.info(f"成功采集山西高速路况：{len(valid_data)} 条，异常：{len(error_log)} 条")
         save_to_file(valid_data, "shanxi")
         # save_to_file(error_log, "shanxi_error")
 
         config = load_config()
         conn = get_mysql_connection(config['mysql'])
-        insert_traffic_data("shanxi", valid_data, conn)
+        insert_traffic_data("山西", valid_data, conn)
         conn.close()
     except Exception as e:
         logging.error(f"任务执行失败: {e}")
