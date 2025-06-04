@@ -272,7 +272,7 @@ async def run_task():
         logging.info(f"成功采集吉林高速路况：{len(valid_data)} 条，异常：{len(error_log)} 条")
         save_to_file(valid_data, "jilin")
         
-        return
+        # return
         config = load_config()
         conn = get_mysql_connection(config['mysql'])
         insert_traffic_data("吉林", valid_data, conn)
@@ -290,8 +290,8 @@ def schedule_loop():
 
 
 if __name__ == "__main__":
-    # schedule_loop()
-    asyncio.run(run_task())
+    schedule_loop()
+    # asyncio.run(run_task())
     # data = asyncio.run(fetch_links())
     # print(data)
     # d=asyncio.run(fetch_jilin_event_data())
